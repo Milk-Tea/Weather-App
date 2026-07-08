@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import { useWeather } from './hooks/useWeather'
 import { SearchBar } from './components/SearchBar'
@@ -24,6 +24,13 @@ function getBackgroundClass(weatherCode: number | undefined, isDay: boolean | un
 export default function App() {
   const { currentWeather, locationInfo, forecast, history, loading, error, search, selectLocation, refresh, locationQuery } = useWeather()
   const [selectedDay, setSelectedDay] = useState<DayData | null>(null)
+  const detailRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (selectedDay) {
+      detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [selectedDay])
 
   const bgClass = getBackgroundClass(currentWeather?.weatherCode, currentWeather?.isDay)
 
@@ -84,7 +91,7 @@ export default function App() {
 
           {!loading && currentWeather && locationInfo && (
             <div className="space-y-6 animate-fadeIn">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/15">
+              <div ref={detailRef} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/15">
                 {selectedDay ? (
                   <>
                     <div className="flex items-center justify-between mb-4">
