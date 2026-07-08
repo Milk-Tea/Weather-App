@@ -113,7 +113,7 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
             aria-controls="location-suggestions"
             aria-activedescendant={activeIndex >= 0 ? `suggestion-${activeIndex}` : undefined}
             disabled={loading}
-            className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50
+            className="w-full pl-4 pr-9 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50
               focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-200
               disabled:opacity-60"
           />
@@ -124,6 +124,18 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
             </div>
+          )}
+          {value && !isFetching && (
+            <button
+              type="button"
+              onClick={() => { setValue(''); setSuggestions([]); setIsOpen(false) }}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           )}
         </div>
         <button
