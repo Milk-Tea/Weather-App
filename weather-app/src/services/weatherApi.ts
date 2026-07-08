@@ -124,6 +124,14 @@ export async function geocode(query: string): Promise<LocationInfo> {
   }
 }
 
+export async function searchLocations(query: string): Promise<GeocodingResult[]> {
+  if (query.trim().length < 2) return []
+  const url = `${GEOCODING_URL}?name=${encodeURIComponent(query.trim())}&count=5&language=en&format=json`
+  const cacheKey = `geo_suggest_${query.toLowerCase().trim()}`
+  const data = await fetchJSON<{ results?: GeocodingResult[] }>(url, cacheKey)
+  return data.results ?? []
+}
+
 // --- Weather fetch ---
 
 export async function fetchWeather(lat: number, lon: number, timezone: string): Promise<OpenMeteoResponse> {
