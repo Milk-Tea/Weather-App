@@ -17,9 +17,15 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
   const [activeIndex, setActiveIndex] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const skipSearchRef = useRef(false)
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    if (skipSearchRef.current) {
+      skipSearchRef.current = false
+      return
+    }
 
     if (value.trim().length < 2) {
       setSuggestions([])
@@ -58,6 +64,7 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
   }, [])
 
   function handleSelect(result: GeocodingResult) {
+    skipSearchRef.current = true
     setValue(result.name)
     setIsOpen(false)
     setSuggestions([])
