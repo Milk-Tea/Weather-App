@@ -1,6 +1,6 @@
 # Weather App
 
-A production-ready weather application built with React, TypeScript, Vite, and Tailwind CSS.
+A weather application built with React, TypeScript, Vite, and Tailwind CSS.
 
 ## Features
 
