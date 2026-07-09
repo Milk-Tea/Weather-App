@@ -6,7 +6,7 @@ import { CurrentWeatherDetail, SelectedDayDetail } from './components/WeatherDet
 import { WeatherGrid } from './components/WeatherGrid'
 import { ErrorBanner } from './components/ErrorBanner'
 import { SkeletonLoader } from './components/SkeletonLoader'
-import type { DayData } from './types/weather'
+import type { DayData, GeocodingResult } from './types/weather'
 
 function getBackgroundClass(weatherCode: number | undefined, isDay: boolean | undefined): string {
   if (weatherCode === undefined) return 'from-slate-800 via-slate-700 to-slate-600'
@@ -22,7 +22,7 @@ function getBackgroundClass(weatherCode: number | undefined, isDay: boolean | un
 }
 
 export default function App() {
-  const { currentWeather, locationInfo, forecast, history, loading, error, search, refresh, locationQuery } = useWeather()
+  const { currentWeather, locationInfo, forecast, history, loading, error, search, selectLocation, refresh, locationQuery } = useWeather()
   const [selectedDay, setSelectedDay] = useState<DayData | null>(null)
   const detailRef = useRef<HTMLDivElement>(null)
 
@@ -37,6 +37,11 @@ export default function App() {
   function handleSearch(loc: string) {
     setSelectedDay(null)
     search(loc)
+  }
+
+  function handleSelectSuggestion(result: GeocodingResult) {
+    setSelectedDay(null)
+    selectLocation(result)
   }
 
   function handleRefresh() {
@@ -56,7 +61,7 @@ export default function App() {
 
           <div className="mb-6 flex items-center gap-2">
             <div className="flex-1">
-              <SearchBar onSearch={handleSearch} loading={loading} />
+              <SearchBar onSearch={handleSearch} onSelectSuggestion={handleSelectSuggestion} loading={loading} />
             </div>
             {currentWeather && (
               <button
