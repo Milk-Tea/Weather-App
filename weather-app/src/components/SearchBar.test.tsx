@@ -4,8 +4,26 @@ import { SearchBar } from './SearchBar'
 
 vi.mock('../services/weatherApi', () => ({
   searchLocations: vi.fn().mockResolvedValue([
-    { id: 1, name: 'London', country: 'United Kingdom', country_code: 'GB', latitude: 51.5, longitude: -0.1, timezone: 'Europe/London', admin1: 'England' },
-    { id: 2, name: 'Londonderry', country: 'United Kingdom', country_code: 'GB', latitude: 54.9, longitude: -7.3, timezone: 'Europe/London', admin1: 'Northern Ireland' },
+    {
+      id: 1,
+      name: 'London',
+      country: 'United Kingdom',
+      country_code: 'GB',
+      latitude: 51.5,
+      longitude: -0.1,
+      timezone: 'Europe/London',
+      admin1: 'England',
+    },
+    {
+      id: 2,
+      name: 'Londonderry',
+      country: 'United Kingdom',
+      country_code: 'GB',
+      latitude: 54.9,
+      longitude: -7.3,
+      timezone: 'Europe/London',
+      admin1: 'Northern Ireland',
+    },
   ]),
 }))
 

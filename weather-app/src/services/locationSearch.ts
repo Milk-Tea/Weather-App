@@ -14,14 +14,14 @@ async function getIndex(): Promise<Fuse<CityRecord>> {
 
   fuse = new Fuse(cities, {
     keys: [
-      { name: 'name',      weight: 0.6 },
+      { name: 'name', weight: 0.6 },
       { name: 'asciiname', weight: 0.3 },
-      { name: 'aliases',   weight: 0.1 },
+      { name: 'aliases', weight: 0.1 },
     ],
-    threshold:         0.35,
-    distance:          80,
+    threshold: 0.35,
+    distance: 80,
     minMatchCharLength: 2,
-    includeScore:      true,
+    includeScore: true,
   })
 
   return fuse
@@ -30,7 +30,7 @@ async function getIndex(): Promise<Fuse<CityRecord>> {
 export async function searchCities(query: string): Promise<GeocodingResult[]> {
   if (query.trim().length < 2) return []
 
-  const index   = await getIndex()
+  const index = await getIndex()
   const results = index.search(query, { limit: 20 })
 
   return results
@@ -43,13 +43,13 @@ export async function searchCities(query: string): Promise<GeocodingResult[]> {
     })
     .slice(0, 5)
     .map(({ item: d }) => ({
-      id:           d.id,
-      name:         d.name,
-      country:      d.country,
+      id: d.id,
+      name: d.name,
+      country: d.country,
       country_code: d.country_code,
-      admin1:       d.admin1 || undefined,
-      latitude:     d.latitude,
-      longitude:    d.longitude,
-      timezone:     d.timezone,
+      admin1: d.admin1 || undefined,
+      latitude: d.latitude,
+      longitude: d.longitude,
+      timezone: d.timezone,
     }))
 }

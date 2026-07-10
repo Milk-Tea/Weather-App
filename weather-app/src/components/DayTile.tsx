@@ -14,28 +14,23 @@ export function DayTile({ day, isSelected, onClick }: Props) {
       aria-pressed={isSelected}
       aria-label={`${day.isHistory ? 'Historical' : 'Forecast'} weather for ${day.date}: ${day.description}, high ${day.maxTemp}°, low ${day.minTemp}°`}
       className={`
-        relative w-full rounded-2xl p-4 text-center transition-all duration-300 cursor-pointer
-        border border-white/10 hover:border-white/30 hover:scale-105 active:scale-100
-        ${isSelected
-          ? 'bg-white/25 border-white/40 shadow-lg shadow-black/20 scale-105'
-          : 'bg-white/10 hover:bg-white/15'}
+        flex w-full cursor-pointer items-center gap-3 rounded-[6px] border border-white/10 px-3 py-2.5
+        text-start transition-all duration-200 hover:border-white/30 active:scale-[0.99] sm:gap-4
+        sm:px-4 sm:py-3
+        ${isSelected ? 'border-white/40 bg-white/25 shadow-md shadow-black/20' : 'bg-white/10 hover:bg-white/15'}
       `}
     >
-      {isSelected && (
-        <div className="absolute inset-0 rounded-2xl ring-2 ring-white/40 pointer-events-none" />
-      )}
-      <div className="text-white/60 text-xs uppercase tracking-wide mb-2">
-        {day.isHistory ? '▲ Past' : '▼ Coming'}
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-sm font-medium text-white">{day.date}</div>
+        <div className="truncate text-xs text-white/60">{day.description}</div>
       </div>
-      <div className="text-white font-medium text-sm mb-3">{day.date}</div>
-      <div className="text-3xl mb-2" role="img" aria-label={day.description}>
+      <div className="flex-shrink-0 text-2xl sm:text-3xl" role="img" aria-label={day.description}>
         {day.emoji}
       </div>
-      <div className="flex justify-center gap-2 text-sm">
-        <span className="text-white font-semibold">{day.maxTemp}°</span>
-        <span className="text-white/50">{day.minTemp}°</span>
+      <div className="flex flex-shrink-0 items-baseline gap-1.5 tabular-nums">
+        <span className="text-sm font-semibold text-white sm:text-base">{day.maxTemp}°</span>
+        <span className="text-xs text-white/50 sm:text-sm">{day.minTemp}°</span>
       </div>
-      <div className="text-white/60 text-xs mt-1 truncate">{day.description}</div>
     </button>
   )
 }

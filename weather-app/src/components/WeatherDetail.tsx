@@ -11,9 +11,9 @@ interface SelectedDayProps {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-white/10 rounded-xl p-3 text-center">
-      <div className="text-white/60 text-xs uppercase tracking-wide mb-1">{label}</div>
-      <div className="text-white font-semibold">{value}</div>
+    <div className="rounded-[6px] bg-white/10 p-3 text-center">
+      <div className="mb-1 text-xs uppercase tracking-wide text-white/60">{label}</div>
+      <div className="font-semibold text-white">{value}</div>
     </div>
   )
 }
@@ -21,22 +21,26 @@ function StatCard({ label, value }: { label: string; value: string }) {
 export function CurrentWeatherDetail({ weather, location }: CurrentProps) {
   return (
     <div className="animate-fadeIn" data-testid="current-weather">
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6">
-        <div className="flex-1 text-center sm:text-left">
-          <h2 className="text-5xl sm:text-7xl font-thin text-white">
+      <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+        <div className="flex w-full flex-col text-left">
+          <h2 className="text-4xl font-thin text-white sm:text-5xl lg:text-7xl">
             {weather.temperature}°
           </h2>
-          <p className="text-white/80 text-lg mt-1">{weather.description}</p>
-          <p className="text-white/60 text-sm mt-1">
+          <p className="mt-1 text-base text-white/80 sm:text-lg">{weather.description}</p>
+          <p className="mt-1 text-sm text-white/60">
             {location.name}, {location.country}
           </p>
         </div>
-        <div className="text-6xl sm:text-7xl" role="img" aria-label={weather.description}>
+        <div
+          className="text-5xl sm:text-6xl lg:text-7xl"
+          role="img"
+          aria-label={weather.description}
+        >
           {weather.emoji}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Feels Like" value={`${weather.feelslike}°`} />
         <StatCard label="Humidity" value={`${weather.humidity}%`} />
         <StatCard label="Wind" value={`${weather.windSpeed} km/h ${weather.windDir}`} />
@@ -51,28 +55,28 @@ export function CurrentWeatherDetail({ weather, location }: CurrentProps) {
 export function SelectedDayDetail({ day }: SelectedDayProps) {
   return (
     <div className="animate-fadeIn" data-testid="selected-day-detail">
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6">
-        <div className="flex-1 text-center sm:text-left">
-          <div className="text-white/60 text-sm uppercase tracking-widest mb-1">
+      <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+        <div className="flex-1 text-left">
+          <div className="mb-1 text-sm uppercase tracking-widest text-white/60">
             {day.isHistory ? 'Historical' : 'Forecast'}
           </div>
-          <h2 className="text-3xl font-semibold text-white">{day.date}</h2>
-          <p className="text-white/80 text-lg mt-1">{day.description}</p>
-          <div className="flex gap-4 mt-2 justify-center sm:justify-start">
-            <span className="text-white/60 text-sm">
-              H: <span className="text-white font-medium">{day.maxTemp}°</span>
+          <h2 className="text-2xl font-semibold text-white sm:text-3xl">{day.date}</h2>
+          <p className="mt-1 text-base text-white/80 sm:text-lg">{day.description}</p>
+          <div className="mt-2 flex justify-center gap-4 sm:justify-start">
+            <span className="text-sm text-white/60">
+              H: <span className="font-medium text-white">{day.maxTemp}°</span>
             </span>
-            <span className="text-white/60 text-sm">
-              L: <span className="text-white font-medium">{day.minTemp}°</span>
+            <span className="text-sm text-white/60">
+              L: <span className="font-medium text-white">{day.minTemp}°</span>
             </span>
           </div>
         </div>
-        <div className="text-6xl" role="img" aria-label={day.description}>
+        <div className="text-5xl sm:text-6xl" role="img" aria-label={day.description}>
           {day.emoji}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Avg Temp" value={`${day.avgTemp}°`} />
         <StatCard label="Wind" value={`${day.windSpeed} km/h ${day.windDir}`} />
         <StatCard label="Precipitation" value={`${day.precip} mm`} />

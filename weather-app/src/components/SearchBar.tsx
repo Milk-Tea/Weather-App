@@ -4,20 +4,20 @@ import { searchCities } from '../services/locationSearch'
 import type { GeocodingResult } from '../types/weather'
 
 interface Props {
-  onSearch:           (location: string) => void
+  onSearch: (location: string) => void
   onSelectSuggestion: (result: GeocodingResult) => void
-  loading:            boolean
+  loading: boolean
 }
 
 export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
-  const [value, setValue]             = useState('')
+  const [value, setValue] = useState('')
   const [suggestions, setSuggestions] = useState<GeocodingResult[]>([])
-  const [isOpen, setIsOpen]           = useState(false)
-  const [isFetching, setIsFetching]   = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
-  const containerRef  = useRef<HTMLDivElement>(null)
-  const debounceRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const requestIdRef  = useRef(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const requestIdRef = useRef(0)
   const skipSearchRef = useRef(false)
 
   useEffect(() => {
@@ -52,7 +52,9 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
       }
     }, 300)
 
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
   }, [value])
 
   useEffect(() => {
@@ -77,10 +79,17 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!value.trim()) return
+
+    // Cancel any pending debounce and invalidate in-flight requests
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    requestIdRef.current++
+    setSuggestions([])
+    setIsOpen(false)
+    setIsFetching(false)
+
     if (activeIndex >= 0 && suggestions[activeIndex]) {
       handleSelect(suggestions[activeIndex])
     } else {
-      setIsOpen(false)
       onSearch(value.trim())
     }
   }
@@ -89,10 +98,10 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
     if (!isOpen) return
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActiveIndex(i => Math.min(i + 1, suggestions.length - 1))
+      setActiveIndex((i) => Math.min(i + 1, suggestions.length - 1))
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setActiveIndex(i => Math.max(i - 1, -1))
+      setActiveIndex((i) => Math.max(i - 1, -1))
     } else if (e.key === 'Escape') {
       setIsOpen(false)
       setActiveIndex(-1)
@@ -100,41 +109,61 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-xl mx-auto">
+    <div ref={containerRef} className="relative w-full">
       <form onSubmit={handleSubmit} className="flex gap-2" role="search">
         <div className="relative flex-1">
           <input
             type="text"
             value={value}
-            onChange={e => setValue(e.target.value)}
+            onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search city or country..."
+            placeholder="Enter city name"
             aria-label="Location search"
             aria-autocomplete="list"
             aria-expanded={isOpen}
             aria-controls="location-suggestions"
             aria-activedescendant={activeIndex >= 0 ? `suggestion-${activeIndex}` : undefined}
             disabled={loading}
-            className="w-full pl-4 pr-9 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50
-              focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-200 disabled:opacity-60"
+            className="w-full rounded-[6px] border border-white/20 bg-white/10 py-3 pl-4 pr-9 text-white placeholder-white/50
+              transition-all duration-200 focus:border-white/50 focus:bg-white/15 focus:outline-none disabled:opacity-60"
           />
           {isFetching && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <svg className="animate-spin h-4 w-4 text-white/40" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <svg className="size-4 animate-spin text-white/40" viewBox="0 0 24 24" fill="none">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
             </div>
           )}
           {value && !isFetching && (
             <button
               type="button"
-              onClick={() => { setValue(''); setSuggestions([]); setIsOpen(false) }}
+              onClick={() => {
+                setValue('')
+                setSuggestions([])
+                setIsOpen(false)
+              }}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white/80"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
@@ -143,21 +172,36 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
           type="submit"
           disabled={loading || !value.trim()}
           aria-label="Search weather"
-          className="px-5 py-3 rounded-xl bg-white/20 hover:bg-white/30 border border-white/20
-            text-white font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+          className="flex-shrink-0 rounded-[6px] border border-white/20 bg-white/20 p-3 font-medium text-white
+            transition-all duration-200 hover:bg-white/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 sm:px-5"
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
-              Loading
+              <span className="hidden sm:inline">Loading</span>
             </span>
           ) : (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           )}
         </button>
@@ -168,8 +212,8 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
           id="location-suggestions"
           role="listbox"
           aria-label="Location suggestions"
-          className="absolute z-50 top-full left-0 right-12 mt-1 bg-slate-800/95 backdrop-blur-md
-            border border-white/20 rounded-xl overflow-hidden shadow-2xl animate-fadeIn"
+          className="absolute inset-x-0 top-full z-50 mt-1 animate-fadeIn overflow-hidden rounded-[6px]
+            border border-white/20 bg-slate-800/95 shadow-2xl backdrop-blur-md"
         >
           {suggestions.map((result, i) => (
             <li
@@ -179,24 +223,37 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
               aria-selected={i === activeIndex}
               onMouseDown={() => handleSelect(result)}
               onMouseEnter={() => setActiveIndex(i)}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors select-none
+              className={`flex cursor-pointer select-none items-center gap-3 px-4 py-3 transition-colors
                 ${i === activeIndex ? 'bg-white/20' : 'hover:bg-white/10'}
                 ${i > 0 ? 'border-t border-white/10' : ''}
               `}
             >
-              <svg className="w-4 h-4 text-white/40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg
+                className="size-4 flex-shrink-0 text-white/40"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
-              <div className="flex-1 min-w-0">
-                <span className="text-white font-medium">{result.name}</span>
+              <div className="min-w-0 flex-1">
+                <span className="font-medium text-white">{result.name}</span>
                 {result.admin1 && (
-                  <span className="text-white/50 text-sm ml-2">{result.admin1}</span>
+                  <span className="ml-2 text-sm text-white/50">{result.admin1}</span>
                 )}
               </div>
-              <span className="text-white/40 text-xs flex-shrink-0">{result.country}</span>
+              <span className="flex-shrink-0 text-xs text-white/40">{result.country}</span>
             </li>
           ))}
         </ul>

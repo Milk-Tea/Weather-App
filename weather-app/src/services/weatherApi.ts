@@ -6,36 +6,43 @@ import type {
   DayData,
 } from '../types/weather'
 
+export class LocationNotFoundError extends Error {
+  constructor(query: string) {
+    super(`No results found for "${query}"`)
+    this.name = 'LocationNotFoundError'
+  }
+}
+
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast'
 const CACHE_TTL = 30 * 60 * 1000 // 30 minutes
 
 // WMO weather interpretation codes → [description, day emoji, night emoji]
 const WMO_MAP: Record<number, [string, string, string]> = {
-  0:  ['Clear sky',                    '☀️',  '🌙'],
-  1:  ['Mainly clear',                 '🌤️', '🌤️'],
-  2:  ['Partly cloudy',                '⛅',  '⛅'],
-  3:  ['Overcast',                     '☁️',  '☁️'],
-  45: ['Fog',                          '🌫️', '🌫️'],
-  48: ['Icy fog',                      '🌫️', '🌫️'],
-  51: ['Light drizzle',                '🌦️', '🌦️'],
-  53: ['Moderate drizzle',             '🌧️', '🌧️'],
-  55: ['Dense drizzle',                '🌧️', '🌧️'],
-  61: ['Slight rain',                  '🌧️', '🌧️'],
-  63: ['Moderate rain',                '🌧️', '🌧️'],
-  65: ['Heavy rain',                   '🌧️', '🌧️'],
-  71: ['Slight snow',                  '🌨️', '🌨️'],
-  73: ['Moderate snow',                '❄️',  '❄️'],
-  75: ['Heavy snow',                   '❄️',  '❄️'],
-  77: ['Snow grains',                  '🌨️', '🌨️'],
-  80: ['Slight showers',               '🌦️', '🌦️'],
-  81: ['Moderate showers',             '🌧️', '🌧️'],
-  82: ['Heavy showers',                '⛈️',  '⛈️'],
-  85: ['Slight snow showers',          '🌨️', '🌨️'],
-  86: ['Heavy snow showers',           '🌨️', '🌨️'],
-  95: ['Thunderstorm',                 '⛈️',  '⛈️'],
-  96: ['Thunderstorm with hail',       '⛈️',  '⛈️'],
-  99: ['Thunderstorm with heavy hail', '⛈️',  '⛈️'],
+  0: ['Clear sky', '☀️', '🌙'],
+  1: ['Mainly clear', '🌤️', '🌤️'],
+  2: ['Partly cloudy', '⛅', '⛅'],
+  3: ['Overcast', '☁️', '☁️'],
+  45: ['Fog', '🌫️', '🌫️'],
+  48: ['Icy fog', '🌫️', '🌫️'],
+  51: ['Light drizzle', '🌦️', '🌦️'],
+  53: ['Moderate drizzle', '🌧️', '🌧️'],
+  55: ['Dense drizzle', '🌧️', '🌧️'],
+  61: ['Slight rain', '🌧️', '🌧️'],
+  63: ['Moderate rain', '🌧️', '🌧️'],
+  65: ['Heavy rain', '🌧️', '🌧️'],
+  71: ['Slight snow', '🌨️', '🌨️'],
+  73: ['Moderate snow', '❄️', '❄️'],
+  75: ['Heavy snow', '❄️', '❄️'],
+  77: ['Snow grains', '🌨️', '🌨️'],
+  80: ['Slight showers', '🌦️', '🌦️'],
+  81: ['Moderate showers', '🌧️', '🌧️'],
+  82: ['Heavy showers', '⛈️', '⛈️'],
+  85: ['Slight snow showers', '🌨️', '🌨️'],
+  86: ['Heavy snow showers', '🌨️', '🌨️'],
+  95: ['Thunderstorm', '⛈️', '⛈️'],
+  96: ['Thunderstorm with hail', '⛈️', '⛈️'],
+  99: ['Thunderstorm with heavy hail', '⛈️', '⛈️'],
 }
 
 export function getWMODescription(code: number): string {
@@ -56,7 +63,9 @@ export function degreesToCardinal(deg: number): string {
 function formatDate(dateStr: string): string {
   const [year, month, day] = dateStr.split('-').map(Number)
   return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric',
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
   })
 }
 
@@ -113,7 +122,7 @@ export async function geocode(query: string): Promise<LocationInfo> {
 
   const data = await fetchJSON<{ results?: GeocodingResult[] }>(url, cacheKey)
   const result = data.results?.[0]
-  if (!result) throw new Error(`Location "${query}" not found`)
+  if (!result) throw new LocationNotFoundError(query)
 
   return {
     name: result.name,
@@ -134,7 +143,11 @@ export async function searchLocations(query: string): Promise<GeocodingResult[]>
 
 // --- Weather fetch ---
 
-export async function fetchWeather(lat: number, lon: number, timezone: string): Promise<OpenMeteoResponse> {
+export async function fetchWeather(
+  lat: number,
+  lon: number,
+  timezone: string
+): Promise<OpenMeteoResponse> {
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lon),
@@ -179,7 +192,11 @@ export async function fetchWeatherData(location: string | LocationInfo): Promise
   history: DayData[]
 }> {
   const locationInfo = typeof location === 'string' ? await geocode(location) : location
-  const raw = await fetchWeather(locationInfo.latitude, locationInfo.longitude, locationInfo.timezone)
+  const raw = await fetchWeather(
+    locationInfo.latitude,
+    locationInfo.longitude,
+    locationInfo.timezone
+  )
 
   const cur = raw.current
   const isDay = cur.is_day === 1

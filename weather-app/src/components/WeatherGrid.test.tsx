@@ -42,7 +42,12 @@ describe('given history and forecast data', () => {
 
   it('renders the Past 3 Days and Next 3 Days headings', () => {
     render(
-      <WeatherGrid history={[historyDay]} forecast={[forecastDay]} selectedDate={null} onSelect={() => {}} />
+      <WeatherGrid
+        history={[historyDay]}
+        forecast={[forecastDay]}
+        selectedDate={null}
+        onSelect={() => {}}
+      />
     )
     expect(screen.getByText(/past 3 days/i)).toBeInTheDocument()
     expect(screen.getByText(/next 3 days/i)).toBeInTheDocument()
@@ -50,7 +55,12 @@ describe('given history and forecast data', () => {
 
   it('renders one tile per day', () => {
     render(
-      <WeatherGrid history={[historyDay]} forecast={[forecastDay]} selectedDate={null} onSelect={() => {}} />
+      <WeatherGrid
+        history={[historyDay]}
+        forecast={[forecastDay]}
+        selectedDate={null}
+        onSelect={() => {}}
+      />
     )
     expect(screen.getAllByTestId('day-tile')).toHaveLength(2)
   })
@@ -58,7 +68,12 @@ describe('given history and forecast data', () => {
   it('calls onSelect with the day when a tile is clicked', () => {
     const onSelect = vi.fn()
     render(
-      <WeatherGrid history={[historyDay]} forecast={[forecastDay]} selectedDate={null} onSelect={onSelect} />
+      <WeatherGrid
+        history={[historyDay]}
+        forecast={[forecastDay]}
+        selectedDate={null}
+        onSelect={onSelect}
+      />
     )
     fireEvent.click(screen.getAllByRole('button')[0])
     expect(onSelect).toHaveBeenCalledTimes(1)

@@ -43,7 +43,15 @@ const mockWeatherResponse = {
     is_day: 1,
   },
   daily: {
-    time: ['2024-01-12','2024-01-13','2024-01-14','2024-01-15','2024-01-16','2024-01-17','2024-01-18'],
+    time: [
+      '2024-01-12',
+      '2024-01-13',
+      '2024-01-14',
+      '2024-01-15',
+      '2024-01-16',
+      '2024-01-17',
+      '2024-01-18',
+    ],
     weather_code: [116, 122, 116, 2, 113, 116, 122],
     temperature_2m_max: [10, 9, 11, 8, 12, 11, 9],
     temperature_2m_min: [3, 2, 4, 3, 5, 4, 2],
@@ -51,19 +59,32 @@ const mockWeatherResponse = {
     wind_speed_10m_max: [18, 12, 15, 14, 10, 20, 16],
     wind_direction_10m_dominant: [270, 220, 250, 260, 180, 300, 240],
     sunrise: [
-      '2024-01-12T08:10','2024-01-13T08:09','2024-01-14T08:08',
-      '2024-01-15T08:06','2024-01-16T08:05','2024-01-17T08:04','2024-01-18T08:03',
+      '2024-01-12T08:10',
+      '2024-01-13T08:09',
+      '2024-01-14T08:08',
+      '2024-01-15T08:06',
+      '2024-01-16T08:05',
+      '2024-01-17T08:04',
+      '2024-01-18T08:03',
     ],
     sunset: [
-      '2024-01-12T15:58','2024-01-13T15:59','2024-01-14T16:00',
-      '2024-01-15T16:02','2024-01-16T16:03','2024-01-17T16:05','2024-01-18T16:06',
+      '2024-01-12T15:58',
+      '2024-01-13T15:59',
+      '2024-01-14T16:00',
+      '2024-01-15T16:02',
+      '2024-01-16T16:03',
+      '2024-01-17T16:05',
+      '2024-01-18T16:06',
     ],
     uv_index_max: [1, 1, 1, 2, 2, 1, 1],
   },
 }
 
 beforeEach(() => clearWeatherCache())
-afterEach(() => { vi.restoreAllMocks(); clearWeatherCache() })
+afterEach(() => {
+  vi.restoreAllMocks()
+  clearWeatherCache()
+})
 
 describe('given getWMODescription is called', () => {
   it('returns the description for a known code', () => {
@@ -105,7 +126,10 @@ describe('given geocode is called with a valid city', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('resolves to a LocationInfo with name, country, and coordinates', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => mockGeoResponse }))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: async () => mockGeoResponse })
+    )
     const result = await geocode('London')
     expect(result.name).toBe('London')
     expect(result.country).toBe('United Kingdom')
@@ -125,7 +149,10 @@ describe('given geocode is called with an invalid city', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('throws when the API returns no results', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ results: [] }) }))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ results: [] }) })
+    )
     await expect(geocode('Nonexistent City XYZ')).rejects.toThrow('not found')
   })
 
@@ -139,7 +166,12 @@ describe('given searchLocations is called', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('returns an array of matching results', async () => {
-    const twoResults = { results: [mockGeoResponse.results[0], { ...mockGeoResponse.results[0], id: 2, name: 'Londonderry' }] }
+    const twoResults = {
+      results: [
+        mockGeoResponse.results[0],
+        { ...mockGeoResponse.results[0], id: 2, name: 'Londonderry' },
+      ],
+    }
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => twoResults }))
     const results = await searchLocations('Lon')
     expect(results).toHaveLength(2)
@@ -171,7 +203,10 @@ describe('given fetchWeather is called', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('returns current conditions and 7 daily entries', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => mockWeatherResponse }))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: async () => mockWeatherResponse })
+    )
     const result = await fetchWeather(51.5, -0.125, 'Europe/London')
     expect(result.current.temperature_2m).toBe(8.2)
     expect(result.daily.time).toHaveLength(7)
@@ -190,9 +225,12 @@ describe('given fetchWeatherData is called', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('returns 3 history days and 3 forecast days', async () => {
-    vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
-      .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
+        .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
     )
     const result = await fetchWeatherData('London')
     expect(result.history).toHaveLength(3)
@@ -200,9 +238,12 @@ describe('given fetchWeatherData is called', () => {
   })
 
   it('marks the first 3 daily entries as history and the last 3 as forecast', async () => {
-    vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
-      .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
+        .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
     )
     const { history, forecast } = await fetchWeatherData('London')
     expect(history.every((d) => d.isHistory)).toBe(true)
@@ -210,9 +251,12 @@ describe('given fetchWeatherData is called', () => {
   })
 
   it('rounds and maps current weather fields correctly', async () => {
-    vi.stubGlobal('fetch', vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
-      .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
+        .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
     )
     const { currentWeather } = await fetchWeatherData('London')
     expect(currentWeather.temperature).toBe(8)
@@ -224,14 +268,21 @@ describe('given fetchWeatherData is called', () => {
   it('accepts a pre-resolved LocationInfo and skips geocoding', async () => {
     const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: async () => mockWeatherResponse })
     vi.stubGlobal('fetch', mockFetch)
-    await fetchWeatherData({ name: 'London', country: 'UK', latitude: 51.5, longitude: -0.125, timezone: 'Europe/London' })
+    await fetchWeatherData({
+      name: 'London',
+      country: 'UK',
+      latitude: 51.5,
+      longitude: -0.125,
+      timezone: 'Europe/London',
+    })
     expect(mockFetch).toHaveBeenCalledTimes(1)
   })
 })
 
 describe('given clearWeatherCache is called', () => {
   it('forces a fresh network request on the next fetch', async () => {
-    const mockFetch = vi.fn()
+    const mockFetch = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })
       .mockResolvedValueOnce({ ok: true, json: async () => mockWeatherResponse })
       .mockResolvedValueOnce({ ok: true, json: async () => mockGeoResponse })

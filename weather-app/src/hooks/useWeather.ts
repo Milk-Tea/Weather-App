@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 
-import { fetchWeatherData, clearWeatherCache } from '../services/weatherApi'
+import { fetchWeatherData, clearWeatherCache, LocationNotFoundError } from '../services/weatherApi'
 import type { CurrentWeatherData, LocationInfo, DayData, GeocodingResult } from '../types/weather'
 
 export interface WeatherState {
@@ -10,6 +10,7 @@ export interface WeatherState {
   history: DayData[]
   loading: boolean
   error: string | null
+  errorKind: 'not-found' | 'other' | null
   locationQuery: string
 }
 
@@ -21,6 +22,7 @@ export function useWeather() {
     history: [],
     loading: false,
     error: null,
+    errorKind: null,
     locationQuery: '',
   })
 
@@ -45,6 +47,7 @@ export function useWeather() {
         ...prev,
         loading: false,
         error: err instanceof Error ? err.message : 'Failed to fetch weather data',
+        errorKind: err instanceof LocationNotFoundError ? 'not-found' : 'other',
       }))
     }
   }, [])
@@ -76,6 +79,7 @@ export function useWeather() {
         ...prev,
         loading: false,
         error: err instanceof Error ? err.message : 'Failed to fetch weather data',
+        errorKind: err instanceof LocationNotFoundError ? 'not-found' : 'other',
       }))
     }
   }, [])
@@ -88,5 +92,22 @@ export function useWeather() {
     [search]
   )
 
-  return { ...state, search, selectLocation, refresh }
+  const clearError = useCallback(() => {
+    setState((prev) => ({ ...prev, error: null, errorKind: null }))
+  }, [])
+
+  const reset = useCallback(() => {
+    setState({
+      currentWeather: null,
+      locationInfo: null,
+      forecast: [],
+      history: [],
+      loading: false,
+      error: null,
+      errorKind: null,
+      locationQuery: '',
+    })
+  }, [])
+
+  return { ...state, search, selectLocation, refresh, clearError, reset }
 }
