@@ -54,19 +54,19 @@ yarn preview
 
 ### 5. Deploy to GitHub Pages
 
-Deployment is automatic: `.github/workflows/deploy.yml` builds and publishes the app on every push to `main`. In the repo's GitHub settings, set **Pages → Source** to **GitHub Actions**. The app is served from `/weather-app/`, which is why `vite.config.ts` sets `base: '/weather-app/'` — if you fork this under a different repo name, update that value to match.
+Deployment is automatic: `.github/workflows/deploy.yml` builds and publishes the app on every push to `main`. https://milk-tea.github.io/Weather-App/
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `yarn dev` | Start the Vite dev server |
-| `yarn build` | Type-check and build for production |
-| `yarn preview` | Serve the production build locally |
-| `yarn lint` | Run ESLint on `src/` |
-| `yarn test:run` | Run the test suite once |
-| `yarn test` | Run tests in watch mode |
-| `yarn test:ui` | Open the Vitest UI |
+| Command                | Description                                   |
+| ---------------------- | --------------------------------------------- |
+| `yarn dev`             | Start the Vite dev server                     |
+| `yarn build`           | Type-check and build for production           |
+| `yarn preview`         | Serve the production build locally            |
+| `yarn lint`            | Run ESLint on `src/`                          |
+| `yarn test:run`        | Run the test suite once                       |
+| `yarn test`            | Run tests in watch mode                       |
+| `yarn test:ui`         | Open the Vitest UI                            |
 | `yarn generate:cities` | Regenerate `public/cities.json` from GeoNames |
 
 ## Tests
