@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       keyframes: {
@@ -21,12 +18,11 @@ export default {
         },
       },
       animation: {
-        fadeIn: 'fadeIn 0.4s ease-out',
-        slideUp: 'slideUp 0.5s ease-out',
-        pulse: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        fadeIn: 'fadeIn 0.3s ease-out',
+        slideUp: 'slideUp 0.3s ease-out',
+        pulse: 'pulse 0.3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },
   plugins: [],
 }
-

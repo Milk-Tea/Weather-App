@@ -11,7 +11,14 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "generate:cities": "tsx scripts/ingest-cities.ts"
+    "generate:cities": "tsx scripts/ingest-cities.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "fuse.js": "^7.4.2",
@@ -33,10 +40,17 @@
     "adm-zip": "^0.5.18",
     "autoprefixer": "^10.5.2",
     "eslint": "^8.45.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "eslint-plugin-tailwindcss": "3",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.0",
+    "lint-staged": "15",
     "postcss": "^8.5.16",
+    "prettier": "^3.9.5",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.23.0",
     "typescript": "^5.0.2",

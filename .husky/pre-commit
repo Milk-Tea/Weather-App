@@ -1,0 +1,1 @@
+cd weather-app && yarn lint-staged
