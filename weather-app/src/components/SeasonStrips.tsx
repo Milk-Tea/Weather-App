@@ -1,7 +1,7 @@
-import springImg from '../assets/images/spring.jpg'
-import summerImg from '../assets/images/summer.jpg'
-import autumnImg from '../assets/images/autumn.jpg'
-import winterImg from '../assets/images/winter.jpg'
+import springImg from '../assets/images/spring.webp'
+import summerImg from '../assets/images/summer.webp'
+import autumnImg from '../assets/images/autumn.webp'
+import winterImg from '../assets/images/winter.webp'
 
 const SEASONS = [
   { name: 'Spring', image: springImg },
