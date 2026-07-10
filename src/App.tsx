@@ -88,7 +88,7 @@ export default function App() {
         }`}
       >
         <div
-          className={`mx-auto flex w-full max-w-[1440px] flex-col sm:gap-6 lg:flex-row lg:py-12 ${
+          className={`mx-auto flex w-full max-w-360 flex-col sm:gap-6 lg:flex-row lg:py-12 ${
             isLanding
               ? 'relative min-h-screen gap-0 p-0 sm:p-0 lg:items-stretch lg:gap-8 lg:px-6 lg:py-12'
               : 'items-start gap-4 self-center px-4 py-6 sm:px-6 sm:py-8'
@@ -156,7 +156,7 @@ export default function App() {
             {isLanding ? (
               <>
                 <header>
-                  <h1 className="leading-2xl mb-1 text-2xl font-bold tracking-tight text-white drop-shadow-sm sm:text-3xl lg:text-[3rem] lg:text-white/90 lg:drop-shadow-none">
+                  <h1 className="leading-2xl mb-1 text-2xl font-bold tracking-tight text-white drop-shadow-sm sm:text-3xl lg:text-5xl lg:text-white/90 lg:drop-shadow-none">
                     What&apos;s the weather like?
                   </h1>
                   <p className="text-sm text-white/75 drop-shadow-sm lg:text-white/50 lg:drop-shadow-none">
@@ -181,7 +181,7 @@ export default function App() {
                 <header>
                   {currentWeather && locationInfo && (
                     <>
-                      <h1 className="mb-2 text-2xl font-bold leading-tight tracking-tight text-white/90 sm:text-3xl lg:text-[3rem] lg:leading-[3.25rem]">
+                      <h1 className="mb-2 text-2xl leading-tight font-bold tracking-tight text-white/90 sm:text-3xl lg:text-5xl lg:leading-13">
                         The weather in {locationInfo.name} is currently{' '}
                         {getWeatherPhrase(currentWeather.weatherCode, currentWeather.isDay)}.
                       </h1>
@@ -211,7 +211,7 @@ export default function App() {
                 {selectedDay ? (
                   <>
                     <div className="mb-4 flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-widest text-white/50">
+                      <span className="text-xs tracking-widest text-white/50 uppercase">
                         {selectedDay.isHistory ? 'Historical Data' : 'Forecast'}
                       </span>
                       <button
@@ -239,7 +239,7 @@ export default function App() {
                   </>
                 ) : (
                   <>
-                    <div className="mb-4 text-xs uppercase tracking-widest text-white/70">
+                    <div className="mb-4 text-xs tracking-widest text-white/70 uppercase">
                       Current Conditions
                     </div>
                     <CurrentWeatherDetail weather={currentWeather} location={locationInfo} />
@@ -275,7 +275,7 @@ export default function App() {
             )}
 
             {!currentWeather && (
-              <div className="relative min-h-[240px] flex-1 overflow-hidden sm:min-h-[320px] lg:min-h-[min(70vh,720px)]">
+              <div className="relative min-h-60 flex-1 overflow-hidden sm:min-h-80 lg:min-h-[min(70vh,720px)]">
                 <SeasonStrips />
               </div>
             )}

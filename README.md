@@ -126,7 +126,7 @@ scripts/
 
 ### Styling
 
-- **Tailwind CSS v3** utility classes — no CSS-in-JS runtime overhead, co-located styles, tree-shakeable. Custom `fadeIn` and `slideUp` animations are declared in `tailwind.config.js`.
+- **Tailwind CSS v4** utility classes via the official `@tailwindcss/vite` plugin — no CSS-in-JS runtime overhead, co-located styles, tree-shakeable. Custom `fadeIn`, `slideUp`, and `pulse` animations are declared CSS-first in `src/index.css` via `@theme`/`@keyframes` (v4 has no `tailwind.config.js` by default).
 - Dynamic gradient background based on WMO weather codes gives the UI a contextual feel without a large icon library.
 - Season strip images are served as WebP (~2.7 MB total, resized to 1400px wide) for faster loads.
 

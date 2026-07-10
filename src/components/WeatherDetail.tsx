@@ -12,7 +12,7 @@ interface SelectedDayProps {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[6px] bg-white/10 p-3 text-center">
-      <div className="mb-1 text-xs uppercase tracking-wide text-white/60">{label}</div>
+      <div className="mb-1 text-xs tracking-wide text-white/60 uppercase">{label}</div>
       <div className="font-semibold text-white">{value}</div>
     </div>
   )
@@ -57,7 +57,7 @@ export function SelectedDayDetail({ day }: SelectedDayProps) {
     <div className="animate-fadeIn" data-testid="selected-day-detail">
       <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
         <div className="flex-1 text-left">
-          <div className="mb-1 text-sm uppercase tracking-widest text-white/60">
+          <div className="mb-1 text-sm tracking-widest text-white/60 uppercase">
             {day.isHistory ? 'Historical' : 'Forecast'}
           </div>
           <h2 className="text-2xl font-semibold text-white sm:text-3xl">{day.date}</h2>

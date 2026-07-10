@@ -30,7 +30,7 @@ function SkeletonStatCard() {
 export function SkeletonDetail() {
   return (
     <div role="status" aria-live="polite" aria-label="Loading weather data">
-      <div className="mb-4 text-xs uppercase tracking-widest text-white/70">Current Conditions</div>
+      <div className="mb-4 text-xs tracking-widest text-white/70 uppercase">Current Conditions</div>
 
       <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
         <div className="w-full flex-1 space-y-2 text-center sm:text-left">
@@ -59,7 +59,7 @@ export function SkeletonGrid() {
       className="flex flex-col gap-4 sm:gap-5"
     >
       <section>
-        <h3 className="mb-2 text-xs font-medium uppercase tracking-widest text-white/70">
+        <h3 className="mb-2 text-xs font-medium tracking-widest text-white/70 uppercase">
           Next 3 Days
         </h3>
         <ul className="flex flex-col gap-1.5 sm:gap-2">
@@ -71,7 +71,7 @@ export function SkeletonGrid() {
         </ul>
       </section>
       <section>
-        <h3 className="mb-2 text-xs font-medium uppercase tracking-widest text-white/70">
+        <h3 className="mb-2 text-xs font-medium tracking-widest text-white/70 uppercase">
           Past 3 Days
         </h3>
         <ul className="flex flex-col gap-1.5 sm:gap-2">

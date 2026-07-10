@@ -19,6 +19,8 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const requestIdRef = useRef(0)
   const skipSearchRef = useRef(false)
+  const visibleSuggestions = value.trim().length >= 2 ? suggestions : []
+  const isDropdownOpen = isOpen && visibleSuggestions.length > 0
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -29,8 +31,6 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
     }
 
     if (value.trim().length < 2) {
-      setSuggestions([])
-      setIsOpen(false)
       return
     }
 
@@ -87,18 +87,18 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
     setIsOpen(false)
     setIsFetching(false)
 
-    if (activeIndex >= 0 && suggestions[activeIndex]) {
-      handleSelect(suggestions[activeIndex])
+    if (activeIndex >= 0 && visibleSuggestions[activeIndex]) {
+      handleSelect(visibleSuggestions[activeIndex])
     } else {
       onSearch(value.trim())
     }
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (!isOpen) return
+    if (!isDropdownOpen) return
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActiveIndex((i) => Math.min(i + 1, suggestions.length - 1))
+      setActiveIndex((i) => Math.min(i + 1, visibleSuggestions.length - 1))
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       setActiveIndex((i) => Math.max(i - 1, -1))
@@ -120,15 +120,15 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
             placeholder="Enter city name"
             aria-label="Location search"
             aria-autocomplete="list"
-            aria-expanded={isOpen}
+            aria-expanded={isDropdownOpen}
             aria-controls="location-suggestions"
             aria-activedescendant={activeIndex >= 0 ? `suggestion-${activeIndex}` : undefined}
             disabled={loading}
-            className="w-full rounded-[6px] border border-white/20 bg-white/10 py-3 pl-4 pr-9 text-white placeholder-white/50
+            className="w-full rounded-[6px] border border-white/20 bg-white/10 py-3 pr-9 pl-4 text-white placeholder-white/50
               transition-all duration-200 focus:border-white/50 focus:bg-white/15 focus:outline-none disabled:opacity-60"
           />
           {isFetching && (
-            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
               <svg className="size-4 animate-spin text-white/40" viewBox="0 0 24 24" fill="none">
                 <circle
                   className="opacity-25"
@@ -155,7 +155,7 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
                 setIsOpen(false)
               }}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 transition-colors hover:text-white/80"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-white/40 transition-colors hover:text-white/80"
             >
               <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -207,7 +207,7 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
         </button>
       </form>
 
-      {isOpen && suggestions.length > 0 && (
+      {isDropdownOpen && (
         <ul
           id="location-suggestions"
           role="listbox"
@@ -215,7 +215,7 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
           className="absolute inset-x-0 top-full z-50 mt-1 animate-fadeIn overflow-hidden rounded-[6px]
             border border-white/20 bg-slate-800/95 shadow-2xl backdrop-blur-md"
         >
-          {suggestions.map((result, i) => (
+          {visibleSuggestions.map((result, i) => (
             <li
               key={result.id}
               id={`suggestion-${i}`}
@@ -223,7 +223,7 @@ export function SearchBar({ onSearch, onSelectSuggestion, loading }: Props) {
               aria-selected={i === activeIndex}
               onMouseDown={() => handleSelect(result)}
               onMouseEnter={() => setActiveIndex(i)}
-              className={`flex cursor-pointer select-none items-center gap-3 px-4 py-3 transition-colors
+              className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors select-none
                 ${i === activeIndex ? 'bg-white/20' : 'hover:bg-white/10'}
                 ${i > 0 ? 'border-t border-white/10' : ''}
               `}

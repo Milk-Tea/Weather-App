@@ -3,7 +3,7 @@
 ## Stack
 
 - **Framework**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS v3 (utility classes in JSX, no CSS-in-JS)
+- **Styling**: Tailwind CSS v4 (utility classes in JSX, no CSS-in-JS; theme/animations defined in `src/index.css` via `@theme`, no `tailwind.config.js`)
 - **Testing**: Vitest + Testing Library
 - **Package manager**: Yarn
 
@@ -44,7 +44,7 @@ Group imports in this order, with a blank line between each group:
 - Don't use `useMemo` or `useCallback` unless they solve a measurable performance or referential equality problem.
 - Never use array indices as React keys when stable identifiers exist.
 - Use `onMouseDown` instead of `onClick` on dropdown items to prevent blur from firing before selection.
-- Animations via Tailwind's `animate-*` utilities (defined in `tailwind.config.js`).
+- Animations via Tailwind's `animate-*` utilities (defined in `src/index.css` via `@theme` custom properties + `@keyframes`).
 
 ## Accessibility
 

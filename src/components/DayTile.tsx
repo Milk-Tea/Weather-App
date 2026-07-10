@@ -14,10 +14,10 @@ export function DayTile({ day, isSelected, onClick }: Props) {
       aria-pressed={isSelected}
       aria-label={`${day.isHistory ? 'Historical' : 'Forecast'} weather for ${day.date}: ${day.description}, high ${day.maxTemp}°, low ${day.minTemp}°`}
       className={`
-        flex w-full cursor-pointer items-center gap-3 rounded-[6px] border border-white/10 px-3 py-2.5
-        text-start transition-all duration-200 hover:border-white/30 active:scale-[0.99] sm:gap-4
+        active:scale-0.99 flex w-full cursor-pointer items-center gap-3 rounded-[6px] border border-white/10 px-3
+        py-2.5 text-start transition-all duration-200 hover:border-white/30 sm:gap-4
         sm:px-4 sm:py-3
-        ${isSelected ? 'border-white/40 bg-white/25 shadow-md shadow-black/20' : 'bg-white/10 hover:bg-white/15'}
+        ${isSelected ? 'border-white/40 bg-white/25' : 'bg-white/10 hover:bg-white/15'}
       `}
     >
       <div className="min-w-0 flex-1">

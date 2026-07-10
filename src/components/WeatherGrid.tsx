@@ -27,7 +27,7 @@ function DaySection({
 
   return (
     <section>
-      <h3 className="mb-2 text-xs font-medium uppercase tracking-widest text-white/70">{title}</h3>
+      <h3 className="mb-2 text-xs font-medium tracking-widest text-white/70 uppercase">{title}</h3>
       <ul className="flex flex-col gap-1.5 sm:gap-2">
         {days.map((day, index) => (
           <li
