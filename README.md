@@ -2,6 +2,12 @@
 
 A weather application built with React, TypeScript, Vite, and Tailwind CSS.
 
+## Development Notes
+
+This project was built with the assistance of AI-powered coding tools to accelerate development within the assessment timeframe. I used these tools for scaffolding, implementation suggestions, and code generation where appropriate.
+
+All generated code was reviewed, tested, and adapted by me.
+
 ## Features
 
 - **City autocomplete** — typo-tolerant search powered by Fuse.js against a curated GeoNames dataset (cities with population > 15,000), ranked by prominence so major cities always surface first
