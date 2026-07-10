@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { CurrentWeatherData, DayData, LocationInfo } from '../types/weather'
 import { CurrentWeatherDetail, SelectedDayDetail } from './WeatherDetail'
-import type { CurrentWeatherData, LocationInfo, DayData } from '../types/weather'
 
 const mockWeather: CurrentWeatherData = {
   temperature: 8,

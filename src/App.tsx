@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { useWeather } from './hooks/useWeather'
 import { SearchBar } from './components/SearchBar'
+import { SeasonStrips } from './components/SeasonStrips'
+import { SkeletonDetail, SkeletonGrid } from './components/SkeletonLoader'
+import { Toast } from './components/Toast'
 import { CurrentWeatherDetail, SelectedDayDetail } from './components/WeatherDetail'
 import { WeatherGrid } from './components/WeatherGrid'
-import { Toast } from './components/Toast'
-import { SkeletonDetail, SkeletonGrid } from './components/SkeletonLoader'
-import { SeasonStrips } from './components/SeasonStrips'
-import { getBackgroundClass, getWeatherPhrase, getWeatherSuggestion } from './utils/weatherDisplay'
+import { useWeather } from './hooks/useWeather'
 import type { DayData, GeocodingResult } from './types/weather'
+import { getBackgroundClass, getWeatherPhrase, getWeatherSuggestion } from './utils/weatherDisplay'
 
 interface LocationSearchProps {
   onSearch: (location: string) => void
@@ -90,7 +90,7 @@ export default function App() {
         <div
           className={`mx-auto flex w-full max-w-[1440px] flex-col sm:gap-6 lg:flex-row lg:py-12 ${
             isLanding
-              ? 'relative min-h-screen gap-0 p-0 sm:p-0 lg:min-h-0 lg:items-stretch lg:gap-8 lg:px-6 lg:py-12'
+              ? 'relative min-h-screen gap-0 p-0 sm:p-0 lg:items-stretch lg:gap-8 lg:px-6 lg:py-12'
               : 'items-start gap-4 self-center px-4 py-6 sm:px-6 sm:py-8'
           }`}
         >
