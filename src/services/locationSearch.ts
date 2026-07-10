@@ -8,7 +8,7 @@ let fuse: Fuse<CityRecord> | null = null
 async function getIndex(): Promise<Fuse<CityRecord>> {
   if (fuse) return fuse
 
-  const res = await fetch('/cities.json')
+  const res = await fetch(`${import.meta.env.BASE_URL}cities.json`)
   if (!res.ok) throw new Error('Failed to load cities dataset')
   const cities: CityRecord[] = await res.json()
 
