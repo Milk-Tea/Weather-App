@@ -29,7 +29,7 @@ function SkeletonStatCard() {
 
 export function SkeletonDetail() {
   return (
-    <div aria-label="Loading weather data">
+    <div role="status" aria-live="polite" aria-label="Loading weather data">
       <div className="mb-4 text-xs uppercase tracking-widest text-white/70">Current Conditions</div>
 
       <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
@@ -52,7 +52,12 @@ export function SkeletonDetail() {
 
 export function SkeletonGrid() {
   return (
-    <div aria-label="Loading forecast" className="flex flex-col gap-4 sm:gap-5">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-label="Loading forecast"
+      className="flex flex-col gap-4 sm:gap-5"
+    >
       <section>
         <h3 className="mb-2 text-xs font-medium uppercase tracking-widest text-white/70">
           Next 3 Days

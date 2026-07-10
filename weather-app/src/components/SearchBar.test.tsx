@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SearchBar } from './SearchBar'
 
-vi.mock('../services/weatherApi', () => ({
-  searchLocations: vi.fn().mockResolvedValue([
+vi.mock('../services/locationSearch', () => ({
+  searchCities: vi.fn().mockResolvedValue([
     {
       id: 1,
       name: 'London',

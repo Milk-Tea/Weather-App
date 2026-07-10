@@ -42,11 +42,6 @@ describe('given a forecast day tile', () => {
     expect(screen.getByRole('img', { name: 'Partly cloudy' })).toBeInTheDocument()
   })
 
-  it('shows the coming indicator', () => {
-    render(<DayTile day={forecastDay} isSelected={false} onClick={() => {}} />)
-    expect(screen.getByText(/coming/i)).toBeInTheDocument()
-  })
-
   it('sets aria-pressed to false when not selected', () => {
     render(<DayTile day={forecastDay} isSelected={false} onClick={() => {}} />)
     expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'false')
@@ -56,9 +51,9 @@ describe('given a forecast day tile', () => {
 describe('given a history day tile', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('shows the past indicator', () => {
+  it('includes Historical in the accessible label', () => {
     render(<DayTile day={historyDay} isSelected={false} onClick={() => {}} />)
-    expect(screen.getByText(/past/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /historical/i })).toBeInTheDocument()
   })
 })
 

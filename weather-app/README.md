@@ -61,7 +61,6 @@ The test suite covers:
 - `SearchBar` — form submission, keyboard navigation, clear button, loading state
 - `DayTile` — rendering, click handlers, ARIA attributes
 - `WeatherGrid` — history/forecast rendering, tile selection toggle
-- `ErrorBanner` — accessibility role, dismiss callback
 - `CurrentWeatherDetail` / `SelectedDayDetail` — temperature, description, location, stat cards
 
 ## Design decisions & trade-offs

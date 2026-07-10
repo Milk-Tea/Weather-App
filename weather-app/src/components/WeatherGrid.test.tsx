@@ -93,7 +93,7 @@ describe('given a tile is already selected', () => {
         onSelect={onSelect}
       />
     )
-    fireEvent.click(screen.getAllByRole('button')[0])
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(historyDay.date, 'i') }))
     expect(onSelect).toHaveBeenCalledWith(null)
   })
 })

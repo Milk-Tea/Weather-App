@@ -7,102 +7,28 @@ import { WeatherGrid } from './components/WeatherGrid'
 import { Toast } from './components/Toast'
 import { SkeletonDetail, SkeletonGrid } from './components/SkeletonLoader'
 import { SeasonStrips } from './components/SeasonStrips'
+import { getBackgroundClass, getWeatherPhrase, getWeatherSuggestion } from './utils/weatherDisplay'
 import type { DayData, GeocodingResult } from './types/weather'
 
-const WEATHER_PHRASES: Record<number, string> = {
-  1: 'mostly clear',
-  2: 'partly cloudy',
-  3: 'overcast',
-  45: 'foggy',
-  48: 'foggy',
-  51: 'drizzling',
-  53: 'drizzling',
-  55: 'heavily drizzling',
-  61: 'rainy',
-  63: 'rainy',
-  65: 'heavily raining',
-  71: 'snowy',
-  73: 'snowy',
-  75: 'heavily snowing',
-  77: 'heavily snowing',
-  80: 'showery',
-  81: 'showery',
-  82: 'showery',
-  85: 'snowing with showers',
-  86: 'snowing with showers',
-  95: 'stormy',
-  96: 'stormy',
-  99: 'stormy',
+interface LocationSearchProps {
+  onSearch: (location: string) => void
+  onSelectSuggestion: (result: GeocodingResult) => void
+  loading: boolean
+  notFoundError: string | null
 }
 
-function getWeatherPhrase(code: number, isDay: boolean): string {
-  if (code === 0) return isDay ? 'clear and sunny' : 'clear'
-  return WEATHER_PHRASES[code] ?? 'changeable'
-}
-
-type SuggestionRule = {
-  match: (code: number, temp: number) => boolean
-  suggestion: string
-}
-
-const SUGGESTION_RULES: SuggestionRule[] = [
-  {
-    match: (code, temp) => code === 0 && temp > 28,
-    suggestion: 'Perfect day for the beach or pool.',
-  },
-  {
-    match: (code, temp) => code === 0 && temp > 18,
-    suggestion: 'Great time for a picnic or a walk in the park.',
-  },
-  {
-    match: (code, temp) => code === 0 && temp > 8,
-    suggestion: 'Perfect for a brisk walk outside.',
-  },
-  { match: (code) => code === 0, suggestion: 'Clear skies — bundle up and enjoy the fresh air.' },
-  {
-    match: (code, temp) => code <= 3 && temp > 20,
-    suggestion: 'Good conditions for a run or outdoor sport.',
-  },
-  { match: (code) => code <= 3, suggestion: 'Nice enough for a coffee and a stroll.' },
-  {
-    match: (code) => code <= 48,
-    suggestion: 'A cozy day — perfect for staying in with a good book.',
-  },
-  { match: (code) => code <= 55, suggestion: 'Light drizzle — ideal for a café visit.' },
-  {
-    match: (code) => code <= 67,
-    suggestion: 'Keep an umbrella close. Great excuse for a movie night in.',
-  },
-  { match: (code) => code <= 77, suggestion: 'Time to build a snowman.' },
-  {
-    match: (code) => code <= 82,
-    suggestion: 'Showers on and off — best to stay flexible with plans.',
-  },
-  {
-    match: (code) => code <= 86,
-    suggestion: 'Snow showers — perfect for a hot chocolate indoors.',
-  },
-]
-
-function getWeatherSuggestion(code: number, temp: number): string {
+function LocationSearch({
+  onSearch,
+  onSelectSuggestion,
+  loading,
+  notFoundError,
+}: LocationSearchProps) {
   return (
-    SUGGESTION_RULES.find(({ match }) => match(code, temp))?.suggestion ??
-    'Storm incoming — best to stay safe indoors.'
+    <div className="flex flex-col gap-2">
+      <SearchBar onSearch={onSearch} onSelectSuggestion={onSelectSuggestion} loading={loading} />
+      {notFoundError && <p className="pl-1 text-sm text-red-400/90">{notFoundError}</p>}
+    </div>
   )
-}
-
-function getBackgroundClass(weatherCode: number | undefined, isDay: boolean | undefined): string {
-  if (weatherCode === undefined) return 'from-black via-gray-950 to-black'
-  if (!isDay) return 'from-indigo-950 via-slate-900 to-indigo-900'
-
-  if (weatherCode === 0) return 'from-sky-500 via-blue-400 to-cyan-300'
-  if (weatherCode <= 3) return 'from-slate-500 via-sky-400 to-slate-400'
-  if (weatherCode <= 48) return 'from-slate-600 via-slate-500 to-slate-400'
-  if (weatherCode <= 67) return 'from-slate-700 via-blue-800 to-slate-600'
-  if (weatherCode <= 77) return 'from-slate-300 via-blue-200 to-slate-200'
-  if (weatherCode <= 82) return 'from-slate-600 via-blue-700 to-slate-500'
-
-  return 'from-black via-gray-950 to-black'
 }
 
 export default function App() {
@@ -132,6 +58,7 @@ export default function App() {
 
   const bgClass = getBackgroundClass(currentWeather?.weatherCode, currentWeather?.isDay)
   const isLanding = !currentWeather
+  const notFoundError = error && errorKind === 'not-found' ? error : null
 
   function handleSearch(loc: string) {
     setSelectedDay(null)
@@ -148,17 +75,40 @@ export default function App() {
     refresh(locationQuery)
   }
 
+  const outerClass = isLanding
+    ? 'min-h-screen bg-black transition-all duration-1000 lg:bg-gradient-to-br lg:from-black lg:via-gray-950 lg:to-black'
+    : `min-h-screen bg-gradient-to-br ${bgClass} transition-all duration-1000`
+
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${bgClass} transition-all duration-1000`}>
+    <div className={outerClass}>
       {error && errorKind === 'other' && <Toast message={error} onDismiss={clearError} />}
-      <div className={`min-h-screen backdrop-blur-sm ${isLanding ? '' : 'flex'}`}>
+      <div
+        className={`min-h-screen ${
+          isLanding ? 'lg:flex lg:items-center lg:backdrop-blur-sm' : 'flex backdrop-blur-sm'
+        }`}
+      >
         <div
-          className={`mx-auto flex max-w-[1440px] flex-col gap-4 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8 lg:flex-row lg:py-12 ${
-            isLanding ? 'min-h-screen w-full lg:items-stretch' : 'items-start self-center'
+          className={`mx-auto flex w-full max-w-[1440px] flex-col sm:gap-6 lg:flex-row lg:py-12 ${
+            isLanding
+              ? 'relative min-h-screen gap-0 p-0 sm:p-0 lg:min-h-0 lg:items-stretch lg:gap-8 lg:px-6 lg:py-12'
+              : 'items-start gap-4 self-center px-4 py-6 sm:px-6 sm:py-8'
           }`}
         >
+          {isLanding && (
+            <div className="absolute inset-0 lg:hidden">
+              <SeasonStrips />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80" />
+            </div>
+          )}
+
           {/* Left column — header, search, main panel */}
-          <div className="flex w-full flex-col gap-4 self-center sm:gap-6 lg:w-1/2">
+          <div
+            className={`flex w-full flex-col gap-4 sm:gap-6 lg:w-1/2 ${
+              isLanding
+                ? 'relative z-10 min-h-screen justify-center px-4 py-8 sm:px-6 sm:py-12 lg:min-h-[min(70vh,720px)] lg:justify-center lg:p-0'
+                : 'self-center'
+            }`}
+          >
             {!isLanding && currentWeather && locationInfo && (
               <div className="flex items-center gap-2">
                 <button
@@ -206,36 +156,28 @@ export default function App() {
             {isLanding ? (
               <>
                 <header>
-                  <h1 className="mb-1 text-2xl font-bold leading-tight tracking-tight text-white/90 sm:text-3xl lg:text-[3rem]">
+                  <h1 className="leading-2xl mb-1 text-2xl font-bold tracking-tight text-white drop-shadow-sm sm:text-3xl lg:text-[3rem] lg:text-white/90 lg:drop-shadow-none">
                     What&apos;s the weather like?
                   </h1>
-                  <p className="text-sm text-white/50">
+                  <p className="text-sm text-white/75 drop-shadow-sm lg:text-white/50 lg:drop-shadow-none">
                     Search any city for its current conditions and 3-day forecast
                   </p>
                 </header>
-                <div className="flex flex-col gap-2">
-                  <SearchBar
-                    onSearch={handleSearch}
-                    onSelectSuggestion={handleSelectSuggestion}
-                    loading={loading}
-                  />
-                  {error && errorKind === 'not-found' && (
-                    <p className="pl-1 text-sm text-red-400/90">{error}</p>
-                  )}
-                </div>
+                <LocationSearch
+                  onSearch={handleSearch}
+                  onSelectSuggestion={handleSelectSuggestion}
+                  loading={loading}
+                  notFoundError={notFoundError}
+                />
               </>
             ) : (
               <>
-                <div className="flex flex-col gap-2">
-                  <SearchBar
-                    onSearch={handleSearch}
-                    onSelectSuggestion={handleSelectSuggestion}
-                    loading={loading}
-                  />
-                  {error && errorKind === 'not-found' && (
-                    <p className="pl-1 text-sm text-red-400/90">{error}</p>
-                  )}
-                </div>
+                <LocationSearch
+                  onSearch={handleSearch}
+                  onSelectSuggestion={handleSelectSuggestion}
+                  loading={loading}
+                  notFoundError={notFoundError}
+                />
                 <header>
                   {currentWeather && locationInfo && (
                     <>
@@ -274,6 +216,7 @@ export default function App() {
                       </span>
                       <button
                         onClick={() => setSelectedDay(null)}
+                        aria-label="Back to current weather"
                         className="flex items-center gap-1 text-xs text-white/50 transition-colors hover:text-white"
                       >
                         <svg
@@ -310,7 +253,7 @@ export default function App() {
           <div
             className={
               isLanding
-                ? 'flex min-h-0 w-full flex-1 flex-col lg:w-1/2'
+                ? 'hidden min-h-0 w-full flex-1 flex-col lg:flex lg:w-1/2'
                 : 'w-full lg:flex-1 lg:self-end'
             }
           >
@@ -332,7 +275,7 @@ export default function App() {
             )}
 
             {!currentWeather && (
-              <div className="relative min-h-[240px] flex-1 overflow-hidden sm:min-h-[320px]">
+              <div className="relative min-h-[240px] flex-1 overflow-hidden sm:min-h-[320px] lg:min-h-[min(70vh,720px)]">
                 <SeasonStrips />
               </div>
             )}

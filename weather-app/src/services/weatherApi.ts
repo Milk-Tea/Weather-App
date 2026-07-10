@@ -60,9 +60,13 @@ export function degreesToCardinal(deg: number): string {
   return dirs[Math.round(deg / 45) % 8]
 }
 
-function formatDate(dateStr: string): string {
+function parseLocalDate(dateStr: string): Date {
   const [year, month, day] = dateStr.split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+  return new Date(year, month - 1, day)
+}
+
+function formatDate(dateStr: string): string {
+  return parseLocalDate(dateStr).toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
@@ -131,14 +135,6 @@ export async function geocode(query: string): Promise<LocationInfo> {
     longitude: result.longitude,
     timezone: result.timezone,
   }
-}
-
-export async function searchLocations(query: string): Promise<GeocodingResult[]> {
-  if (query.trim().length < 2) return []
-  const url = `${GEOCODING_URL}?name=${encodeURIComponent(query.trim())}&count=5&language=en&format=json`
-  const cacheKey = `geo_suggest_${query.toLowerCase().trim()}`
-  const data = await fetchJSON<{ results?: GeocodingResult[] }>(url, cacheKey)
-  return data.results ?? []
 }
 
 // --- Weather fetch ---
@@ -220,7 +216,7 @@ export async function fetchWeatherData(location: string | LocationInfo): Promise
     const dateStr = daily.time[i]
     return {
       date: formatDate(dateStr),
-      dateEpoch: new Date(dateStr).getTime() / 1000,
+      dateEpoch: Math.floor(parseLocalDate(dateStr).getTime() / 1000),
       minTemp: Math.round(daily.temperature_2m_min[i]),
       maxTemp: Math.round(daily.temperature_2m_max[i]),
       avgTemp: Math.round((daily.temperature_2m_max[i] + daily.temperature_2m_min[i]) / 2),

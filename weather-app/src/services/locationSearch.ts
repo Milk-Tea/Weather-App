@@ -1,7 +1,7 @@
 import Fuse from 'fuse.js'
 
 import type { GeocodingResult } from '../types/weather'
-import type { CityRecord } from '../../scripts/ingest-cities'
+import type { CityRecord } from '../types/city'
 
 let fuse: Fuse<CityRecord> | null = null
 

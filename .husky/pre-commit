@@ -1,1 +1,1 @@
-cd weather-app && yarn lint-staged
+cd weather-app && yarn test:run && yarn lint-staged

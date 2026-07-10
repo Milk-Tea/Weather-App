@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useRef } from 'react'
 
 import { fetchWeatherData, clearWeatherCache, LocationNotFoundError } from '../services/weatherApi'
 import type { CurrentWeatherData, LocationInfo, DayData, GeocodingResult } from '../types/weather'
@@ -25,14 +25,24 @@ export function useWeather() {
     errorKind: null,
     locationQuery: '',
   })
+  const requestIdRef = useRef(0)
 
-  const search = useCallback(async (location: string) => {
+  async function search(location: string) {
     if (!location.trim()) return
 
-    setState((prev) => ({ ...prev, loading: true, error: null, locationQuery: location }))
+    const requestId = ++requestIdRef.current
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      errorKind: null,
+      locationQuery: location,
+    }))
 
     try {
       const data = await fetchWeatherData(location)
+      if (requestId !== requestIdRef.current) return
+
       setState((prev) => ({
         ...prev,
         currentWeather: data.currentWeather,
@@ -41,8 +51,11 @@ export function useWeather() {
         history: data.history,
         loading: false,
         error: null,
+        errorKind: null,
       }))
     } catch (err) {
+      if (requestId !== requestIdRef.current) return
+
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -50,9 +63,9 @@ export function useWeather() {
         errorKind: err instanceof LocationNotFoundError ? 'not-found' : 'other',
       }))
     }
-  }, [])
+  }
 
-  const selectLocation = useCallback(async (result: GeocodingResult) => {
+  async function selectLocation(result: GeocodingResult) {
     const locationInfo: LocationInfo = {
       name: result.name,
       country: result.country,
@@ -61,10 +74,19 @@ export function useWeather() {
       timezone: result.timezone,
     }
 
-    setState((prev) => ({ ...prev, loading: true, error: null, locationQuery: result.name }))
+    const requestId = ++requestIdRef.current
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      errorKind: null,
+      locationQuery: result.name,
+    }))
 
     try {
       const data = await fetchWeatherData(locationInfo)
+      if (requestId !== requestIdRef.current) return
+
       setState((prev) => ({
         ...prev,
         currentWeather: data.currentWeather,
@@ -73,8 +95,11 @@ export function useWeather() {
         history: data.history,
         loading: false,
         error: null,
+        errorKind: null,
       }))
     } catch (err) {
+      if (requestId !== requestIdRef.current) return
+
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -82,21 +107,19 @@ export function useWeather() {
         errorKind: err instanceof LocationNotFoundError ? 'not-found' : 'other',
       }))
     }
-  }, [])
+  }
 
-  const refresh = useCallback(
-    (location: string) => {
-      clearWeatherCache()
-      return search(location)
-    },
-    [search]
-  )
+  function refresh(location: string) {
+    clearWeatherCache()
+    return search(location)
+  }
 
-  const clearError = useCallback(() => {
+  function clearError() {
     setState((prev) => ({ ...prev, error: null, errorKind: null }))
-  }, [])
+  }
 
-  const reset = useCallback(() => {
+  function reset() {
+    requestIdRef.current++
     setState({
       currentWeather: null,
       locationInfo: null,
@@ -107,7 +130,7 @@ export function useWeather() {
       errorKind: null,
       locationQuery: '',
     })
-  }, [])
+  }
 
   return { ...state, search, selectLocation, refresh, clearError, reset }
 }

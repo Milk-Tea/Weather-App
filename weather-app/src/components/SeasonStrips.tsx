@@ -12,7 +12,7 @@ const SEASONS = [
 
 export function SeasonStrips() {
   return (
-    <div className="absolute inset-0 flex flex-row overflow-hidden">
+    <div className="absolute inset-0 flex flex-row overflow-hidden" aria-hidden="true">
       {SEASONS.map(({ name, image }) => (
         <div
           key={name}

@@ -3,11 +3,11 @@ import {
   geocode,
   fetchWeather,
   fetchWeatherData,
-  searchLocations,
   clearWeatherCache,
   getWMODescription,
   getWMOEmoji,
   degreesToCardinal,
+  LocationNotFoundError,
 } from './weatherApi'
 
 const mockGeoResponse = {
@@ -153,49 +153,12 @@ describe('given geocode is called with an invalid city', () => {
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => ({ results: [] }) })
     )
-    await expect(geocode('Nonexistent City XYZ')).rejects.toThrow('not found')
+    await expect(geocode('Nonexistent City XYZ')).rejects.toThrow(LocationNotFoundError)
   })
 
   it('throws on an HTTP error', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500 }))
     await expect(geocode('London')).rejects.toThrow('HTTP error 500')
-  })
-})
-
-describe('given searchLocations is called', () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('returns an array of matching results', async () => {
-    const twoResults = {
-      results: [
-        mockGeoResponse.results[0],
-        { ...mockGeoResponse.results[0], id: 2, name: 'Londonderry' },
-      ],
-    }
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => twoResults }))
-    const results = await searchLocations('Lon')
-    expect(results).toHaveLength(2)
-    expect(results[0].name).toBe('London')
-  })
-
-  it('returns an empty array when the API returns no results', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }))
-    expect(await searchLocations('xyz')).toEqual([])
-  })
-
-  it('skips the network for queries shorter than 2 characters', async () => {
-    const mockFetch = vi.fn()
-    vi.stubGlobal('fetch', mockFetch)
-    expect(await searchLocations('L')).toEqual([])
-    expect(mockFetch).not.toHaveBeenCalled()
-  })
-
-  it('caches results so subsequent identical queries skip the network', async () => {
-    const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: async () => mockGeoResponse })
-    vi.stubGlobal('fetch', mockFetch)
-    await searchLocations('London')
-    await searchLocations('London')
-    expect(mockFetch).toHaveBeenCalledTimes(1)
   })
 })
 

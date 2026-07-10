@@ -2,9 +2,11 @@ import AdmZip from 'adm-zip'
 import { writeFileSync, mkdirSync } from 'fs'
 import { join } from 'path'
 
+import type { CityRecord } from '../src/types/city'
+
 const CITIES_URL = 'https://download.geonames.org/export/dump/cities15000.zip'
 const COUNTRY_URL = 'https://download.geonames.org/export/dump/countryInfo.txt'
-const ADMIN1_URL  = 'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
+const ADMIN1_URL = 'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
 
 async function fetchText(url: string): Promise<string> {
   console.log(`Fetching ${url}...`)
@@ -40,24 +42,10 @@ function parseAdmin1(text: string): Record<string, string> {
   return map
 }
 
-export interface CityRecord {
-  id:          number
-  name:        string
-  asciiname:   string
-  aliases:     string[]
-  country:     string
-  country_code: string
-  admin1:      string
-  latitude:    number
-  longitude:   number
-  timezone:    string
-  population:  number
-}
-
 function parseCities(
   text: string,
   countryMap: Record<string, string>,
-  admin1Map:  Record<string, string>,
+  admin1Map: Record<string, string>
 ): CityRecord[] {
   const cities: CityRecord[] = []
 
@@ -67,28 +55,29 @@ function parseCities(
     if (cols.length < 19 || cols[6] !== 'P') continue
 
     const countryCode = cols[8]
-    const admin1Code  = cols[10]
+    const admin1Code = cols[10]
 
     // Keep only short ASCII aliases to limit file size
     const aliases = cols[3]
-      ? cols[3].split(',')
-          .map(s => s.trim())
-          .filter(s => s.length >= 2 && s.length <= 30 && /^[\x00-\x7F]+$/.test(s))
+      ? cols[3]
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s.length >= 2 && s.length <= 30 && /^[\x00-\x7F]+$/.test(s))
           .slice(0, 6)
       : []
 
     cities.push({
-      id:           parseInt(cols[0], 10),
-      name:         cols[1],
-      asciiname:    cols[2],
+      id: parseInt(cols[0], 10),
+      name: cols[1],
+      asciiname: cols[2],
       aliases,
-      country:      countryMap[countryCode] ?? countryCode,
+      country: countryMap[countryCode] ?? countryCode,
       country_code: countryCode,
-      admin1:       admin1Map[`${countryCode}.${admin1Code}`] ?? '',
-      latitude:     parseFloat(cols[4]),
-      longitude:    parseFloat(cols[5]),
-      timezone:     cols[17],
-      population:   parseInt(cols[14], 10) || 0,
+      admin1: admin1Map[`${countryCode}.${admin1Code}`] ?? '',
+      latitude: parseFloat(cols[4]),
+      longitude: parseFloat(cols[5]),
+      timezone: cols[17],
+      population: parseInt(cols[14], 10) || 0,
     })
   }
 
@@ -102,11 +91,11 @@ async function main() {
     fetchText(ADMIN1_URL),
   ])
 
-  const zip    = new AdmZip(citiesBuffer)
+  const zip = new AdmZip(citiesBuffer)
   const cities = parseCities(
     zip.readAsText('cities15000.txt'),
     parseCountries(countryText),
-    parseAdmin1(admin1Text),
+    parseAdmin1(admin1Text)
   )
 
   console.log(`Parsed ${cities.length.toLocaleString()} cities`)
@@ -114,14 +103,14 @@ async function main() {
   // Sort by population descending so the JSON is pre-ordered
   cities.sort((a, b) => b.population - a.population)
 
-  const outDir  = join(process.cwd(), 'public')
+  const outDir = join(process.cwd(), 'public')
   const outPath = join(outDir, 'cities.json')
   mkdirSync(outDir, { recursive: true })
   writeFileSync(outPath, JSON.stringify(cities))
   console.log(`Written to public/cities.json`)
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err)
   process.exit(1)
 })
