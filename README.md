@@ -54,11 +54,7 @@ yarn preview
 
 ### 5. Deploy to GitHub Pages
 
-```bash
-yarn deploy
-```
-
-This builds the app and pushes `dist/` to the `gh-pages` branch via the `gh-pages` package. In the repo's GitHub settings, set **Pages → Source** to the `gh-pages` branch (root). The app is served from `/weather-app/`, which is why `vite.config.ts` sets `base: '/weather-app/'` — if you fork this under a different repo name, update that value to match.
+Deployment is automatic: `.github/workflows/deploy.yml` builds and publishes the app on every push to `main`. In the repo's GitHub settings, set **Pages → Source** to **GitHub Actions**. The app is served from `/weather-app/`, which is why `vite.config.ts` sets `base: '/weather-app/'` — if you fork this under a different repo name, update that value to match.
 
 ## Scripts
 
@@ -71,7 +67,6 @@ This builds the app and pushes `dist/` to the `gh-pages` branch via the `gh-page
 | `yarn test:run` | Run the test suite once |
 | `yarn test` | Run tests in watch mode |
 | `yarn test:ui` | Open the Vitest UI |
-| `yarn deploy` | Build and publish `dist/` to the `gh-pages` branch |
 | `yarn generate:cities` | Regenerate `public/cities.json` from GeoNames |
 
 ## Tests
